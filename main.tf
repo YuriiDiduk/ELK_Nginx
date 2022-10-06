@@ -103,10 +103,20 @@ resource "aws_security_group" "elasticsearch_sg" {
 resource "aws_security_group_rule" "kibana" {
   depends_on        = [aws_instance.kibana, aws_security_group.elasticsearch_sg]
   type              = "ingress"
-  from_port         = 9200
-  to_port           = 9300
-  protocol          = "tcp"
+  from_port         = 0
+  to_port           = 0
+  protocol          = -1
   cidr_blocks       = ["${aws_instance.kibana.public_ip}/32"]
+  security_group_id = "${aws_security_group.elasticsearch_sg.id}"
+}
+
+resource "aws_security_group_rule" "logstash" {
+  depends_on        = [aws_instance.logstash, aws_security_group.elasticsearch_sg]
+  type              = "ingress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = -1
+  cidr_blocks       = ["${aws_instance.logstash.public_ip}/32"]
   security_group_id = "${aws_security_group.elasticsearch_sg.id}"
 }
 
